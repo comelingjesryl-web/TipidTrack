@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TipidTrack — Student budget manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- First-launch welcome -->
+  <div id="welcome" class="welcome" hidden>
+    <div class="wbox">
+      <h1>TipidTrack</h1>
+      <p>Track your allowance, see where it goes, and save for what matters.</p>
+      <label for="wName" class="form-label">What should we call you?</label>
+      <input id="wName" class="form-control mb-3" maxlength="30" placeholder="Your first name">
+      <div class="d-grid gap-2">
+        <button class="btn" data-w="demo">Explore the demo dashboard</button>
+        <button class="btn btn-ghost" data-w="first">Add my first allowance</button>
+        <button class="btn btn-ghost" data-w="empty">Start with an empty dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <aside class="side">
+      <div class="brand">TipidTrack</div>
+      <nav id="nav" aria-label="Main"></nav>
+      <div class="prof"><span class="av" id="av"></span>
+        <div><b id="pn"></b><small>Saved in this browser</small></div>
+      </div>
+    </aside>
+
+    <main>
+      <header class="top">
+        <div>
+          <p class="crumb" id="crumb"></p>
+          <h1 class="title" id="title"></h1>
+        </div>
+        <div class="tools">
+          <span class="pill" id="demoTag" hidden>Demo data</span>
+          <button class="ib" id="theme" aria-label="Switch light or dark mode"></button>
+          <button class="ib bell" id="bell" aria-label="Open notifications"><i data-lucide="bell"></i><span id="bd"
+              class="dot" hidden></span></button>
+          <button class="btn" id="quick"><i data-lucide="plus"></i><span>Add expense</span></button>
+        </div>
+      </header>
+
+      <div id="filters" class="filters" hidden>
+        <div class="seg" role="group" aria-label="Period">
+          <button data-f="today">Today</button><button data-f="week">This week</button><button data-f="month">This
+            month</button><button data-f="custom">Custom</button>
+        </div>
+        <div class="cust" id="cust" hidden>
+          <input type="date" id="fFrom" class="form-control" aria-label="Range start">
+          <input type="date" id="fTo" class="form-control" aria-label="Range end">
+        </div>
+      </div>
+
+      <section id="overview" data-s>
+        <div class="hello">
+          <p id="date"></p>
+          <h2 id="hi"></h2>
+        </div>
+        <div id="cards" class="cards"></div>
+        <div class="row g-2 mt-0">
+          <div class="col-lg-7">
+            <div class="panel">
+              <h3>Spending by day</h3>
+              <div class="box" data-msg="No expenses in this period yet."><canvas id="c-line"></canvas></div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="panel">
+              <h3>Where it went</h3>
+              <div class="box" data-msg="Add an expense to see your categories."><canvas id="c-cat"></canvas></div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="panel">
+              <h3>Insights</h3>
+              <ul id="ins" class="ins"></ul>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="panel">
+              <h3>Recent transactions</h3>
+              <div id="recent"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="transactions" data-s>
+        <div class="tools2">
+          <input id="q" class="form-control" type="search" placeholder="Search by name" aria-label="Search expenses">
+          <select id="fc" class="form-select" aria-label="Category"></select>
+          <input id="ff" type="date" class="form-control" aria-label="From date">
+          <input id="ft" type="date" class="form-control" aria-label="To date">
+          <select id="fs" class="form-select" aria-label="Sort">
+            <option value="new">Newest</option>
+            <option value="old">Oldest</option>
+            <option value="high">Highest amount</option>
+            <option value="low">Lowest amount</option>
+          </select>
+        </div>
+        <div class="panel">
+          <div id="txList"></div>
+        </div>
+      </section>
+
+      <section id="allowances" data-s>
+        <div class="bar">
+          <p class="mu">Money you receive. It adds to your available balance.</p><button class="btn" data-a="add-i">Add
+            allowance</button>
+        </div>
+        <div class="panel">
+          <div id="incList"></div>
+        </div>
+      </section>
+
+      <section id="budgets" data-s>
+        <div class="bar">
+          <div id="bSum"></div><button class="btn" data-a="edit-b">Edit budgets</button>
+        </div>
+        <div class="panel">
+          <div id="bList"></div>
+        </div>
+      </section>
+
+      <section id="savings" data-s>
+        <div class="bar">
+          <p class="mu">Moving money into a goal lowers your available balance once. It isn't counted as spending.</p>
+          <button class="btn" data-a="add-g">New goal</button>
+        </div>
+        <div id="gList" class="goals"></div>
+      </section>
+
+      <section id="analytics" data-s>
+        <div id="aSum" class="cards two"></div>
+        <div class="row g-2 mt-0">
+          <div class="col-lg-7">
+            <div class="panel">
+              <h3>Income vs expenses</h3>
+              <div class="box" data-msg="Record income or expenses to compare them."><canvas id="a-bar"></canvas></div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="panel">
+              <h3>Savings goals</h3>
+              <div class="box" data-msg="Create a savings goal to track it here."><canvas id="a-sav"></canvas></div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="panel">
+              <h3>Budget vs actual</h3>
+              <div class="box" data-msg="Set category limits to compare them with spending."><canvas
+                  id="a-bud"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="notifications" data-s>
+        <div class="bar">
+          <p class="mu">Alerts appear once per budget period, not on every refresh.</p>
+          <div class="d-flex gap-2"><button class="btn btn-ghost" id="nRead">Mark all read</button><button
+              class="btn btn-ghost" id="nClear">Clear all</button></div>
+        </div>
+        <div class="panel">
+          <div id="nList"></div>
+        </div>
+      </section>
+
+      <section id="settings" data-s>
+        <div class="panel">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" for="sName">Your name</label><input id="sName"
+                class="form-control" maxlength="30"></div>
+            <div class="col-md-6"><label class="form-label" for="sTheme">Theme</label><select id="sTheme"
+                class="form-select">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+              </select></div>
+            <div class="col-md-6"><label class="form-label" for="sCur">Currency display</label><select id="sCur"
+                class="form-select">
+                <option value="PHP">Philippine peso (₱)</option>
+                <option value="USD">US dollar ($)</option>
+              </select></div>
+            <div class="col-md-6"><label class="form-label" for="sPer">Preferred budget period</label><select id="sPer"
+                class="form-select">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select></div>
+            <div class="col-6"><label class="form-label" for="w1">“Approaching” starts at (%)</label><input id="w1"
+                type="number" min="1" max="98" class="form-control"></div>
+            <div class="col-6"><label class="form-label" for="w2">“Almost at the limit” starts at (%)</label><input
+                id="w2" type="number" min="2" max="99" class="form-control"></div>
+          </div>
+          <p class="mu mt-3 mb-0" id="sErr" role="alert">Changing the currency only changes how amounts are displayed.
+            It doesn't convert them.</p>
+        </div>
+        <div class="panel">
+          <h3>Your data</h3>
+          <p class="mu">Everything is saved in this browser's localStorage. It doesn't sync to other devices, and
+            clearing your browser data removes it. Export a backup before you switch devices.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button id="xCsv" class="btn btn-ghost">Export transactions (CSV)</button>
+            <button id="xJson" class="btn btn-ghost">Export full backup (JSON)</button>
+            <label class="btn btn-ghost mb-0" for="xImp">Import JSON backup</label><input id="xImp" type="file"
+              accept="application/json" hidden>
+            <button id="xDemo" class="btn btn-ghost">Load demo data</button>
+            <button id="xReset" class="btn btn-danger">Reset all data</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Shared modal for forms and confirmations -->
+  <div class="modal fade" id="m" tabindex="-1" aria-labelledby="mT" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="mT"></h2><button class="btn-close" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="err" id="mErr" role="alert" hidden></p>
+          <div id="mB"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button><button
+            class="btn" id="mOk">Save</button></div>
+      </div>
+    </div>
+  </div>
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
